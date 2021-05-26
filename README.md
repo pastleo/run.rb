@@ -41,3 +41,52 @@ You will also see any lint errors in the console.
 
 Launches the test runner in the interactive watch mode.<br>
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+---
+
+## Trying to build
+
+```dockerfile
+#FROM trzeci/emscripten:sdk-tag-1.38.28-64bit
+FROM emscripten/emsdk
+RUN apt-get update && \
+  apt-get install -y autoconf bison ruby less vim  && \
+  apt-get clean
+
+# Clone and patch Ruby
+RUN git clone https://github.com/ruby/ruby.git --depth 1 --branch v2_6_1
+#ADD ruby-2.6.1.patch /src
+#WORKDIR /src/ruby
+#RUN patch -p1 < /src/ruby-2.6.1.patch
+
+# docker run --rm -it -v $(pwd):/src/pwd emcc bash
+
+# Build miniruby bitcode
+#RUN autoconf
+#RUN emconfigure ./configure --disable-fiber-coroutine --disable-dln --with-ext=json
+#RUN EMCC_CFLAGS='-s ERROR_ON_UNDEFINED_SYMBOLS=0 -r' emmake make miniruby.bc EXEEXT=.bc
+#RUN emmake make miniruby.bc EXEEXT=.bc
+
+# emcc: warning: generating an executable with an object extension (.so).  If you meant to build an object file please use `-c, `-r`, or `-shared` [-Wemcc]
+
+
+# Build miniruby.wasm
+#RUN mkdir web && emcc -o web/miniruby.js miniruby.bc \
+  #-s ERROR_ON_UNDEFINED_SYMBOLS=0 \
+  #-s TOTAL_MEMORY=67108864 \
+  #-s EMULATE_FUNCTION_POINTER_CASTS=1 \
+  #-s MODULARIZE=1 \
+  #-s EXTRA_EXPORTED_RUNTIME_METHODS=['FS']
+```
+
+> but for now all attempts have failed
+
+## ask existing `.wasm` to load gems
+
+we need 3 gems:
+
+* https://github.com/flori/json
+* https://github.com/ruby/ostruct
+* https://github.com/etrex/kamiflex
+
+`git clone` them into `public/gems` and remove lines related to `parser` in `public/gems/json/lib/json/pure.rb`
