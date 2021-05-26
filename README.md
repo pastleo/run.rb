@@ -89,4 +89,39 @@ we need 3 gems:
 * https://github.com/ruby/ostruct
 * https://github.com/etrex/kamiflex
 
-`git clone` them into `public/gems` and remove lines related to `parser` in `public/gems/json/lib/json/pure.rb`
+first `mkdir -p public/gems` and `git clone` them into `public/gems`,
+because [`public/gems/json/lib/json/pure/parser.rb`](https://github.com/flori/json/blob/master/lib/json/pure/parser.rb#L2) are using native ext `strscan`, and we don't need parser, so just make `public/gems/json/lib/json/pure/parser.rb` empty like:
+
+```ruby
+module JSON
+  module Pure
+    class Parser
+    end
+  end
+end
+```
+
+```javascript
+require 'kamiflex'
+
+puts "Hello, run.rb!"
+
+@urls = [
+  "https://www.abfunds.com.tw/apac/tw/resources/images/LINE/CarouselTest-Left.jpg",
+  "https://www.abfunds.com.tw/apac/tw/resources/images/LINE/CarouselTest-Right.jpg"
+]
+
+
+a = Kamiflex.hash(self) do
+  alt_text "hello world!"
+  carousel do
+    bubbles @urls do |url|
+      body paddingAll: "0px" do
+        image url, size: :full, aspectRatio: "600:906" ,aspectMode: :cover, action: uri_action(url)
+      end
+    end
+  end
+end
+
+puts JSON.generate(a)
+```

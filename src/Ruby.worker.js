@@ -1,5 +1,5 @@
-import run from "./emscripten/ruby-2.6.1/miniruby.js";
-import WASM from "./emscripten/ruby-2.6.1/miniruby.wasm";
+import run from "./emscripten/ruby-2.6.3/miniruby.js";
+import WASM from "./emscripten/ruby-2.6.3/miniruby.wasm";
 
 const input = new Promise((resolve, reject) => {
   self.addEventListener('message', (msg) => {
@@ -68,7 +68,6 @@ run(Module).then(function() {
     Module.FS.writeFile(
       "playground.rb", `
         ${Object.keys(GEMS).map(gem => `$LOAD_PATH.push('/gems/${gem}/lib');`).join('\n')}
-        require 'json';
         ${input}
       `
     );
@@ -84,7 +83,6 @@ run(Module).then(function() {
         })
     );
 
-    console.log(Module['buffer'])
     //console.log(JSON.stringify(Object.keys(Module.FS)))
 
     // Run main()
